@@ -23,23 +23,28 @@
 #' cactus(casnr, output = 'mw', verbose = TRUE)
 cactus <- function(query, output = 'smiles', verbose = FALSE, ...){
   fnx <- function(x, output, verbose...){
-    baseurl <- "http://cactus.nci.nih.gov/chemical/structure"
-    qurl <- paste(baseurl, x, output, 'xml', sep = '/')
-    if(verbose)
-      message(qurl)
-    h <- xmlParse(qurl, isURL = TRUE)
-    #     print(h)
-    out <- xpathSApply(h, "//item", xmlValue)
-    if(length(out) == 0){
-      message("Query '", x, " not found!\n Returning NA!")
+    if(is.na(x)){
+      message("Query is NA.\n Returning NA!")
       out <- NA
+    } else {    
+      baseurl <- "http://cactus.nci.nih.gov/chemical/structure"
+      qurl <- paste(baseurl, x, output, 'xml', sep = '/')
+      if(verbose)
+        message(qurl)
+      h <- xmlParse(qurl, isURL = TRUE)
+      #     print(h)
+      out <- xpathSApply(h, "//item", xmlValue)
+      if(length(out) == 0){
+        message("Query '", x, " not found!\n Returning NA!")
+        out <- NA
+      }
+      if(length(out) > 1){
+        message("More then one hit found!\n Using first hit.")
+        out <- out[1]
+      }
+      Sys.sleep(0.3)
+      return(out)
     }
-    if(length(out) > 1){
-      message("More then one hit found!\n Using first hit.")
-      out <- out[1]
-    }
-    Sys.sleep(0.3)
-    return(out)
   }
   out <- unlist(lapply(query, fnx, output, verbose, ...))
   return(out)
