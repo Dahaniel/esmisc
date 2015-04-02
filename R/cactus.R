@@ -29,7 +29,7 @@ cactus <- function(query, output = 'smiles', verbose = FALSE, ...){
       message(qurl)
     h <- xmlParse(qurl, isURL = TRUE)
     #     print(h)
-    out <- xpathSApply(h, "//data", xmlValue)
+    out <- xpathSApply(h, "//item", xmlValue)
     if(length(out) == 0){
       message("Query '", x, " not found!\n Returning NA!")
       out <- NA
